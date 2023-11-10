@@ -1,2 +1,5 @@
-# riley-goes-for-a-walk
+# Riley Goes For A Walk
+
+## Description
+
 Hexagonal-grid turn-based strategy game in Unity
