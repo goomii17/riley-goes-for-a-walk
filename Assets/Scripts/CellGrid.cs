@@ -27,7 +27,7 @@ public class CellGrid : MonoBehaviour
         InitBoard();
     }
 
-    static bool IsInGrid(int i, int j)
+    public static bool IsInGrid(int i, int j)
     {
         int start = Mathf.Max(i + 1 - GRID_HEIGHT, 0);
         int end = Mathf.Min(GRID_WIDTH + i, MATRIX_WIDTH);
@@ -74,4 +74,7 @@ public class CellGrid : MonoBehaviour
             }
         }
     }
+
+    // Generator to return all cells that contain an enemy
+
 }

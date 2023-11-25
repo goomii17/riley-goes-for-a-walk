@@ -2,15 +2,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-
 public class Cell : MonoBehaviour
 {
     // Coordinates of the cell
     public int x;
     public int y;
 
+    // Base of the cell
+    public ITile tile;
+
     // Content of the cell
-    public Entity content;
+    public IEntity content;
 
     // Neighbors of the cell
     public Cell[] neighbors;
@@ -18,7 +20,7 @@ public class Cell : MonoBehaviour
     void OnMouseDown()
     {
         var disNuts = this;
-        GameManager.instance.OnCellClicked(disNuts);
+        GameManager.Instance.OnCellClicked(disNuts);
         Debug.Log("Cell clicked");
         Debug.Log("Coordinates: " + x + ", " + y);
         Debug.Log("Content: " + content);

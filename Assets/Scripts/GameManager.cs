@@ -14,7 +14,7 @@ public enum GameState
 
 public class GameManager : MonoBehaviour
 {
-    public static GameManager instance;
+    public static GameManager Instance { get; private set; }
 
     public GameState gameState;
 
@@ -25,7 +25,7 @@ public class GameManager : MonoBehaviour
 
     public void OnEnable()
     {
-        instance = this;
+        Instance = this;
     }
 
     public void Update()
@@ -37,6 +37,7 @@ public class GameManager : MonoBehaviour
                 break;
             case GameState.PlayerTurn:
                 // Play Idle animations
+                AnimateIdleEntities();
                 if (targetCell != null)
                 {
                     //bool moveMade = HandlePlayerInstruction() <--- This updates focus and target and saves the instruction if valids
@@ -49,8 +50,10 @@ public class GameManager : MonoBehaviour
             case GameState.AnimateAndMovePlayer:
                 break;
             case GameState.EnemyTurn:
+                // Shoot or hit the player and calculate where to move next
                 break;
             case GameState.AnimateAndMoveEnemies:
+                // Make the animation and make the move
                 break;
             case GameState.GameOver:
                 break;
@@ -69,4 +72,11 @@ public class GameManager : MonoBehaviour
             targetCell = cell;
         }
     }
+
+    private void AnimateIdleEntities()
+    {
+        // Play idle animations
+
+    }
+
 }
