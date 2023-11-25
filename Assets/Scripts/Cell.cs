@@ -5,14 +5,29 @@ using UnityEngine;
 
 public class Cell : MonoBehaviour
 {
-    //tuple of floats
-    private int[] position = new int[2];
-    private Entity content;
+    // Coordinates of the cell
+    public int x;
+    public int y;
 
-    void onMouseDown()
+    // Content of the cell
+    public Entity content;
+
+    // Neighbors of the cell
+    public Cell[] neighbors;
+
+    void OnMouseDown()
     {
         var disNuts = this;
         GameManager.instance.OnCellClicked(disNuts);
+        Debug.Log("Cell clicked");
+        Debug.Log("Coordinates: " + x + ", " + y);
+        Debug.Log("Content: " + content);
+        // Debug.Log("Neighbors: " + neighbors);
+        // Debug all neighbors
+        foreach (Cell neighbor in neighbors)
+        {
+            Debug.Log("Neighbor: " + neighbor);
+        }
     }
 
     void FocusCell()

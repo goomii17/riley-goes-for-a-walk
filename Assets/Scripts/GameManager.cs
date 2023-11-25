@@ -18,13 +18,17 @@ public class GameManager : MonoBehaviour
 
     public GameState gameState;
 
-    public CellBoard cellBoard;
+    public CellGrid cellGrid;
 
     Cell focusedCell;
-
     Cell targetCell;
 
-    void Update()
+    public void OnEnable()
+    {
+        instance = this;
+    }
+
+    public void Update()
     {
         switch (gameState)
         {
