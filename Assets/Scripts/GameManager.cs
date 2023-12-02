@@ -14,8 +14,10 @@ public enum GameState
 
 public class GameManager : MonoBehaviour
 {
+    // Singleton
     public static GameManager Instance { get; private set; }
 
+    public GameInfo gameInfo;
     public GameState gameState;
 
     public CellGrid cellGrid;
@@ -62,7 +64,13 @@ public class GameManager : MonoBehaviour
 
     public void OnPlayButtonClicked()
     {
+        // Initialize the game
         gameState = GameState.PlayerTurn;
+    }
+
+    public void StartGame()
+    {
+        gameInfo = new GameInfo();
     }
 
     public void OnCellClicked(Cell cell)
