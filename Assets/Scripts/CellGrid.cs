@@ -98,7 +98,7 @@ public class CellGrid : MonoBehaviour
     {
         // Put player on the grid
         GameObject playerObject = Instantiate(playerPrefab, Vector3.zero, Quaternion.identity);
-        Cell playerCell = grid[0, 0].GetComponent<Cell>();
+        Cell playerCell = grid[1, 4].GetComponent<Cell>();
         playerCell.SetContent(new Player(playerObject));
 
 

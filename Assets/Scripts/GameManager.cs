@@ -159,11 +159,23 @@ public class GameManager : MonoBehaviour
     public void HandleClickOnEntity()
     {
         // Show enemy moves
-        foreach (Cell cell in targetCell.content.GetAttackableCells())
+        if (targetCell.content.EntityType == EntityType.Enemy)
         {
-            cell.HighlightCell();
-            highlightedCells.Add(cell);
+            foreach (Cell cell in targetCell.content.GetAttackableCells())
+            {
+                cell.HighlightCell();
+                highlightedCells.Add(cell);
+            }
         }
+        else if (targetCell.content.EntityType == EntityType.Player)
+        {
+            foreach (Cell cell in targetCell.content.GetMoveableCells())
+            {
+                cell.HighlightCell();
+                highlightedCells.Add(cell);
+            }
+        }
+
         focusedCell = targetCell;
         targetCell = null;
     }
