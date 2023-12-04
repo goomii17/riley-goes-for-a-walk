@@ -17,6 +17,9 @@ public class GameManager : MonoBehaviour
     // Singleton
     public static GameManager Instance { get; private set; }
 
+    // Menu canvas
+    public GameObject menuCanvas;
+
     public GameInfo gameInfo;
     public GameState gameState;
 
@@ -24,10 +27,17 @@ public class GameManager : MonoBehaviour
 
     Cell focusedCell;
     Cell targetCell;
+    List<Cell> highlightedCells = new List<Cell>();
 
     public void OnEnable()
     {
         Instance = this;
+    }
+
+    public void Awake()
+    {
+        menuCanvas.SetActive(true);
+        gameState = GameState.Menu;
     }
 
     public void Update()
@@ -40,14 +50,7 @@ public class GameManager : MonoBehaviour
             case GameState.PlayerTurn:
                 // Play Idle animations
                 AnimateIdleEntities();
-                if (targetCell != null)
-                {
-                    //bool moveMade = HandlePlayerInstruction() <--- This updates focus and target and saves the instruction if valids
-                    // if (moveMade)
-                    // {
-                    //     gameState = GameState.AnimateAndMovePlayer;
-                    // }
-                }
+                HandlePlayerInstruction();
                 break;
             case GameState.AnimateAndMovePlayer:
                 break;
@@ -62,15 +65,23 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public void ResetGame()
+    {
+        gameInfo = new GameInfo();
+        cellGrid.ResetGrid();
+        cellGrid.FillGrid(level: 1);
+    }
+
     public void OnPlayButtonClicked()
     {
         // Initialize the game
-        gameState = GameState.PlayerTurn;
-    }
+        ResetGame();
 
-    public void StartGame()
-    {
-        gameInfo = new GameInfo();
+        // Hide menu
+        menuCanvas.SetActive(false);
+
+        // Transition state
+        gameState = GameState.PlayerTurn;
     }
 
     public void OnCellClicked(Cell cell)
@@ -79,6 +90,82 @@ public class GameManager : MonoBehaviour
         {
             targetCell = cell;
         }
+    }
+
+    /// <summary>
+    /// We can click on: Void, Floor, Enemy, Player, Elevator
+    /// </summary>
+    public void HandlePlayerInstruction()
+    {
+        // No click
+        if (targetCell == null)
+        {
+            return;
+        }
+
+        // Unfocus cell and all highlighted cells
+        focusedCell?.UnfocusCell();
+        foreach (Cell cell in highlightedCells)
+        {
+            cell.UnHighlightCell();
+        }
+        highlightedCells.Clear();
+
+        // Click same cell or void
+        if (targetCell == focusedCell || targetCell.tile.TileType == TileType.Void)
+        {
+            focusedCell = null;
+            targetCell = null;
+            return;
+        }
+
+        // Click on floor
+        if (targetCell.content == null)
+        {
+            HandleClickOnFloor();
+        }
+        // Click on enemy, player or elevator
+        else
+        {
+            HandleClickOnEntity();
+        }
+    }
+
+    public void HandleClickOnFloor()
+    {
+        // Click with focur NOT on Player
+        if (focusedCell == null || focusedCell.content == null || focusedCell.content.EntityType != EntityType.Player)
+        {
+            // Focus new cell
+            focusedCell = targetCell;
+            focusedCell.FocusCell();
+            targetCell = null;
+            return;
+        }
+
+        var moveOutcome = focusedCell.content.UpdateNextMove(targetCell);
+        if (moveOutcome != MoveOutcome.Fail)
+        {
+            Debug.Log("Player moved to cell");
+        }
+        else
+        {
+            Debug.Log("Player could not move to cell");
+        }
+        focusedCell = null;
+        targetCell = null;
+    }
+
+    public void HandleClickOnEntity()
+    {
+        // Show enemy moves
+        foreach (Cell cell in targetCell.content.GetAttackableCells())
+        {
+            cell.HighlightCell();
+            highlightedCells.Add(cell);
+        }
+        focusedCell = targetCell;
+        targetCell = null;
     }
 
     private void AnimateIdleEntities()

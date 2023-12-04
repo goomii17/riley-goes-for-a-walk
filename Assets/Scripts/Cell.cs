@@ -9,10 +9,10 @@ public class Cell : MonoBehaviour
     public int y;
 
     // Base of the cell
-    public ITile tile;
+    public Tile tile;
 
     // Content of the cell
-    public IEntity content;
+    public Entity content;
 
     // Neighbors of the cell
     public Cell[] neighbors;
@@ -21,20 +21,47 @@ public class Cell : MonoBehaviour
     {
         var disNuts = this;
         GameManager.Instance.OnCellClicked(disNuts);
-        Debug.Log("Cell clicked");
-        Debug.Log("Coordinates: " + x + ", " + y);
-        Debug.Log("Content: " + content);
-        // Debug.Log("Neighbors: " + neighbors);
-        // Debug all neighbors
-        foreach (Cell neighbor in neighbors)
-        {
-            Debug.Log("Neighbor: " + neighbor);
-        }
     }
 
-    void FocusCell()
+    public void SetContent(Entity entity)
+    {
+        // Set the content of the cell
+        content = entity;
+        // Set parent of GO
+        entity.GO.transform.SetParent(transform, false);
+        entity.CurrentCell = this;
+    }
+
+    public void SetTile(Tile tile)
+    {
+        // Set the tile of the cell
+        this.tile = tile;
+        // Set parent of GO
+        tile.GO.transform.SetParent(transform, false);
+    }
+
+    public void FocusCell()
     {
         // Highlight the cell or change sprite in content
+        tile.HighlightTile();
+    }
+
+    public void UnfocusCell()
+    {
+        // Unhighlight the cell or change sprite in content
+        tile.UnHighlightTile();
+    }
+
+    public void HighlightCell()
+    {
+        // Highlight the cell or change sprite in content
+        tile.HighlightTile();
+    }
+
+    public void UnHighlightCell()
+    {
+        // Unhighlight the cell or change sprite in content
+        tile.UnHighlightTile();
     }
 
 }

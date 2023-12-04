@@ -2,50 +2,58 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-
 public class CellGrid : MonoBehaviour
 {
-    const int MATRIX_WIDTH = 9;
-    const int MATRIX_HEIGHT = 11;
-
-    const int GRID_WIDTH = 5;
-    const int GRID_HEIGHT = 7;
-
-    const int CELL_WIDTH = 31;
-    const int CELL_HEIGHT = 27;
-    const float HEX_WIDTH = 16;
-
     // Cell prefab
     public GameObject cellPrefab;
+    public GameObject voidPrefab;
+    public GameObject floorPrefab;
+    public GameObject elevatorPrefab;
+    public GameObject playerPrefab;
+    public GameObject[] enemyPrefabs;
+
+    // Grid of cells
     private GameObject[,] grid;
 
     public void Awake()
     {
-        grid = new GameObject[MATRIX_HEIGHT, MATRIX_WIDTH];
-        Debug.Log("CellGrid Awake", grid[0, 0]);
-
-        InitBoard();
+        DestroyChildren();
+        InitGrid();
+        SetNeighbors();
+        FillGrid();
     }
 
     public static bool IsInGrid(int i, int j)
     {
-        int start = Mathf.Max(i + 1 - GRID_HEIGHT, 0);
-        int end = Mathf.Min(GRID_WIDTH + i, MATRIX_WIDTH);
-        return i >= 0 && i < MATRIX_HEIGHT && j >= start && j < end;
+        int start = Mathf.Max(i + 1 - GameParams.GRID_HEIGHT, 0);
+        int end = Mathf.Min(GameParams.GRID_WIDTH + i, GameParams.MATRIX_WIDTH);
+        return i >= 0 && i < GameParams.MATRIX_HEIGHT && j >= start && j < end;
     }
 
-    private void InitBoard()
+    public void DestroyChildren()
     {
-        // Instantiate and initialize cells
-        for (int i = 0; i < MATRIX_HEIGHT; i++)
+        foreach (Transform child in transform)
         {
-            int start = Mathf.Max(i + 1 - GRID_HEIGHT, 0);
-            int end = Mathf.Min(GRID_WIDTH + i, MATRIX_WIDTH);
+            Destroy(child.gameObject);
+        }
+    }
+
+    /// <summary>
+    /// Initialize grid, instantiate all cells and add them to the grid.
+    /// </summary>
+    private void InitGrid()
+    {
+        grid = new GameObject[GameParams.MATRIX_HEIGHT, GameParams.MATRIX_WIDTH];
+        // Instantiate and initialize cells
+        for (int i = 0; i < GameParams.MATRIX_HEIGHT; i++)
+        {
+            int start = Mathf.Max(i + 1 - GameParams.GRID_HEIGHT, 0);
+            int end = Mathf.Min(GameParams.GRID_WIDTH + i, GameParams.MATRIX_WIDTH);
             for (int j = start; j < end; j++)
             {
                 // Calculate the center of the hexagon
-                float x = j * (CELL_WIDTH / 2 + HEX_WIDTH / 2);
-                float y = (CELL_HEIGHT - 1) * i - j * (CELL_HEIGHT - 1) / 2;
+                float x = j * (GameParams.CELL_WIDTH / 2 + GameParams.HEX_SIZE / 2);
+                float y = (GameParams.CELL_HEIGHT - 1) * i - j * (GameParams.CELL_HEIGHT - 1) / 2;
 
                 GameObject cellObject = Instantiate(cellPrefab, new Vector3(x, y, 0), Quaternion.identity);
                 cellObject.transform.parent = transform;
@@ -56,11 +64,18 @@ public class CellGrid : MonoBehaviour
             }
         }
 
+    }
+
+    /// <summary>
+    /// Sets the neighbors of each cell.
+    /// </summary>
+    public void SetNeighbors()
+    {
         // Set the neighbors of each cell
-        for (int i = 0; i < MATRIX_HEIGHT; i++)
+        for (int i = 0; i < GameParams.MATRIX_HEIGHT; i++)
         {
-            int start = Mathf.Max(i + 1 - GRID_HEIGHT, 0);
-            int end = Mathf.Min(GRID_WIDTH + i, MATRIX_WIDTH);
+            int start = Mathf.Max(i + 1 - GameParams.GRID_HEIGHT, 0);
+            int end = Mathf.Min(GameParams.GRID_WIDTH + i, GameParams.MATRIX_WIDTH);
             for (int j = start; j < end; j++)
             {
                 Cell cell = grid[i, j].GetComponent<Cell>();
@@ -75,6 +90,64 @@ public class CellGrid : MonoBehaviour
         }
     }
 
-    // Generator to return all cells that contain an enemy
+    /// <summary>
+    /// Fills the grid with player, enemies, elevator, floor and void.
+    /// </summary>
+    /// <param name="level"></param>
+    public void FillGrid(int level = 1)
+    {
+        // Put player on the grid
+        GameObject playerObject = Instantiate(playerPrefab, Vector3.zero, Quaternion.identity);
+        Cell playerCell = grid[0, 0].GetComponent<Cell>();
+        playerCell.SetContent(new Player(playerObject));
+
+
+        for (int i = 0; i < GameParams.MATRIX_HEIGHT; i++)
+        {
+            int start = Mathf.Max(i + 1 - GameParams.GRID_HEIGHT, 0);
+            int end = Mathf.Min(GameParams.GRID_WIDTH + i, GameParams.MATRIX_WIDTH);
+            for (int j = start; j < end; j++)
+            {
+                Cell cell = grid[i, j].GetComponent<Cell>();
+                // 90% chance of floor, 10% chance of void
+                if (Random.Range(0, 10) < 9)
+                {
+                    GameObject floorObject = Instantiate(floorPrefab, Vector3.zero, Quaternion.identity);
+                    cell.SetTile(new LabFloor(floorObject));
+                }
+                else
+                {
+                    GameObject voidObject = Instantiate(voidPrefab, Vector3.zero, Quaternion.identity);
+                    cell.SetTile(new Void(voidObject));
+                }
+
+                // 20% chance of enemy
+                if (Random.Range(0, 100) < 5)
+                {
+                    var enemyIndex = Random.Range(0, enemyPrefabs.Length);
+                    GameObject enemyObject = Instantiate(enemyPrefabs[enemyIndex], Vector3.zero, Quaternion.identity);
+                    cell.SetContent(EnemyFactory.CreateEnemy(enemyIndex, enemyObject));
+                }
+            }
+        }
+
+    }
+
+    /// <summary>
+    /// Destroys all content and tiles of the grid if they exist.
+    /// </summary>
+    public void ResetGrid()
+    {
+        foreach (Transform child in transform)
+        {
+            Cell cell = child.GetComponent<Cell>();
+
+            // Reset content and tile, destroy them if they exist
+            cell.content?.AutoDestroy();
+            cell.tile?.AutoDestroy();
+            cell.content = null;
+            cell.tile = null;
+        }
+    }
 
 }
