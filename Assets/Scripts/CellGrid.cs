@@ -92,6 +92,10 @@ public class CellGrid : MonoBehaviour
                 cell.neighbors[5] = IsInGrid(i, j - 1) ? grid[i, j - 1].GetComponent<Cell>() : null;
             }
         }
+        // foreach (Cell neighbor in grid[1, 4].GetComponent<Cell>().neighbors)
+        // {
+        //     Debug.Log("Coordinate: " + neighbor.x + ", " + neighbor.y);
+        // }
     }
 
     /// <summary>

@@ -48,14 +48,14 @@ public class Player : Entity
             {
                 case 0:
                     // Left 5, Right is 1, frontal is 0.0
-                    killMeleeLeft = ValidMeleeCell(nextCell.neighbors[5]) ? nextCell.neighbors[5] : null;
-                    killMeleeRight = ValidMeleeCell(nextCell.neighbors[1]) ? nextCell.neighbors[1] : null;
+                    killMeleeLeft = ValidMeleeCell(CurrentCell.neighbors[5]) ? CurrentCell.neighbors[5] : null;
+                    killMeleeRight = ValidMeleeCell(CurrentCell.neighbors[1]) ? CurrentCell.neighbors[1] : null;
                     killFrontal = ValidFrontalCell(nextCell, 0) ? nextCell.neighbors[0] : null;
                     break;
                 case 1:
                     // Left 0, Right is 2, frontal is 1.1
-                    killMeleeLeft = ValidMeleeCell(nextCell.neighbors[0]) ? nextCell.neighbors[0] : null;
-                    killMeleeRight = ValidMeleeCell(nextCell.neighbors[2]) ? nextCell.neighbors[2] : null;
+                    killMeleeLeft = ValidMeleeCell(CurrentCell.neighbors[0]) ? CurrentCell.neighbors[0] : null;
+                    killMeleeRight = ValidMeleeCell(CurrentCell.neighbors[2]) ? CurrentCell.neighbors[2] : null;
                     killFrontal = ValidFrontalCell(nextCell, 1) ? nextCell.neighbors[1] : null;
                     break;
             }
@@ -66,14 +66,14 @@ public class Player : Entity
             {
                 case -1:
                     // Left 4, Right is 0, frontal is 5.5
-                    killMeleeLeft = ValidMeleeCell(nextCell.neighbors[4]) ? nextCell.neighbors[4] : null;
-                    killMeleeRight = ValidMeleeCell(nextCell.neighbors[0]) ? nextCell.neighbors[0] : null;
+                    killMeleeLeft = ValidMeleeCell(CurrentCell.neighbors[4]) ? CurrentCell.neighbors[4] : null;
+                    killMeleeRight = ValidMeleeCell(CurrentCell.neighbors[0]) ? CurrentCell.neighbors[0] : null;
                     killFrontal = ValidFrontalCell(nextCell, 5) ? nextCell.neighbors[5] : null;
                     break;
                 case 1:
                     // Left 1, Right is 3, frontal is 2.2
-                    killMeleeLeft = ValidMeleeCell(nextCell.neighbors[1]) ? nextCell.neighbors[1] : null;
-                    killMeleeRight = ValidMeleeCell(nextCell.neighbors[3]) ? nextCell.neighbors[3] : null;
+                    killMeleeLeft = ValidMeleeCell(CurrentCell.neighbors[1]) ? CurrentCell.neighbors[1] : null;
+                    killMeleeRight = ValidMeleeCell(CurrentCell.neighbors[3]) ? CurrentCell.neighbors[3] : null;
                     killFrontal = ValidFrontalCell(nextCell, 2) ? nextCell.neighbors[2] : null;
                     break;
             }
@@ -84,14 +84,14 @@ public class Player : Entity
             {
                 case 0:
                     // Left 1, Right is 4, frontal is 3.3
-                    killMeleeLeft = ValidMeleeCell(nextCell.neighbors[1]) ? nextCell.neighbors[1] : null;
-                    killMeleeRight = ValidMeleeCell(nextCell.neighbors[4]) ? nextCell.neighbors[4] : null;
+                    killMeleeLeft = ValidMeleeCell(CurrentCell.neighbors[1]) ? CurrentCell.neighbors[1] : null;
+                    killMeleeRight = ValidMeleeCell(CurrentCell.neighbors[4]) ? CurrentCell.neighbors[4] : null;
                     killFrontal = ValidFrontalCell(nextCell, 3) ? nextCell.neighbors[3] : null;
                     break;
                 case -1:
                     // Left 3, Right is 5, frontal is 4.4
-                    killMeleeLeft = ValidMeleeCell(nextCell.neighbors[3]) ? nextCell.neighbors[3] : null;
-                    killMeleeRight = ValidMeleeCell(nextCell.neighbors[5]) ? nextCell.neighbors[5] : null;
+                    killMeleeLeft = ValidMeleeCell(CurrentCell.neighbors[3]) ? CurrentCell.neighbors[3] : null;
+                    killMeleeRight = ValidMeleeCell(CurrentCell.neighbors[5]) ? CurrentCell.neighbors[5] : null;
                     killFrontal = ValidFrontalCell(nextCell, 4) ? nextCell.neighbors[4] : null;
                     break;
             }
