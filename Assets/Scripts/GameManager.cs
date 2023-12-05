@@ -7,6 +7,7 @@ public enum GameState
     Menu,
     PlayerTurn,
     AnimateAndMovePlayer,
+    AnimateAndAttackPlayer,
     EnemyTurn,
     AnimateAndMoveEnemies,
     GameOver
@@ -53,12 +54,22 @@ public class GameManager : MonoBehaviour
                 HandlePlayerInstruction();
                 break;
             case GameState.AnimateAndMovePlayer:
+                bool finished = cellGrid.player.MakeMove();
+                if (finished)
+                {
+                    gameState = GameState.AnimateAndAttackPlayer;
+                }
+                break;
+            case GameState.AnimateAndAttackPlayer:
+                gameState = GameState.EnemyTurn;
                 break;
             case GameState.EnemyTurn:
                 // Shoot or hit the player and calculate where to move next
+                gameState = GameState.AnimateAndMoveEnemies;
                 break;
             case GameState.AnimateAndMoveEnemies:
                 // Make the animation and make the move
+                gameState = GameState.PlayerTurn;
                 break;
             case GameState.GameOver:
                 break;
@@ -147,6 +158,7 @@ public class GameManager : MonoBehaviour
         if (moveOutcome != MoveOutcome.Fail)
         {
             Debug.Log("Player moved to cell");
+            gameState = GameState.AnimateAndMovePlayer;
         }
         else
         {

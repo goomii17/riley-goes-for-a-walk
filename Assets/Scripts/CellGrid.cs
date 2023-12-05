@@ -15,6 +15,10 @@ public class CellGrid : MonoBehaviour
     // Grid of cells
     private GameObject[,] grid;
 
+    // Player and enemies
+    public Player player;
+    public List<Entity> enemies = new List<Entity>();
+
     public void Awake()
     {
         DestroyChildren();
@@ -100,6 +104,18 @@ public class CellGrid : MonoBehaviour
         GameObject playerObject = Instantiate(playerPrefab, Vector3.zero, Quaternion.identity);
         Cell playerCell = grid[1, 4].GetComponent<Cell>();
         playerCell.SetContent(new Player(playerObject));
+        player = playerCell.content as Player;
+
+        // List of banned cells for placing enemies
+        List<Cell> bannedCells = new List<Cell>(){
+            playerCell,
+            grid[0, 3].GetComponent<Cell>(),
+            grid[0, 4].GetComponent<Cell>(),
+            grid[1, 5].GetComponent<Cell>(),
+            grid[2, 5].GetComponent<Cell>(),
+            grid[3, 4].GetComponent<Cell>(),
+            grid[2, 3].GetComponent<Cell>(),
+        };
 
 
         for (int i = 0; i < GameParams.MATRIX_HEIGHT; i++)
@@ -114,19 +130,20 @@ public class CellGrid : MonoBehaviour
                 {
                     GameObject floorObject = Instantiate(floorPrefab, Vector3.zero, Quaternion.identity);
                     cell.SetTile(new LabFloor(floorObject));
+
+                    // 20% chance of enemy
+                    if (Random.Range(0, 100) < 5 && !bannedCells.Contains(cell))
+                    {
+                        var enemyIndex = Random.Range(0, enemyPrefabs.Length);
+                        GameObject enemyObject = Instantiate(enemyPrefabs[enemyIndex], Vector3.zero, Quaternion.identity);
+                        cell.SetContent(EnemyFactory.CreateEnemy(enemyIndex, enemyObject));
+                        enemies.Add(cell.content);
+                    }
                 }
                 else
                 {
                     GameObject voidObject = Instantiate(voidPrefab, Vector3.zero, Quaternion.identity);
                     cell.SetTile(new Void(voidObject));
-                }
-
-                // 20% chance of enemy
-                if (Random.Range(0, 100) < 5)
-                {
-                    var enemyIndex = Random.Range(0, enemyPrefabs.Length);
-                    GameObject enemyObject = Instantiate(enemyPrefabs[enemyIndex], Vector3.zero, Quaternion.identity);
-                    cell.SetContent(EnemyFactory.CreateEnemy(enemyIndex, enemyObject));
                 }
             }
         }
@@ -148,6 +165,8 @@ public class CellGrid : MonoBehaviour
             cell.content = null;
             cell.tile = null;
         }
+        player = null;
+        enemies.Clear();
     }
 
 }

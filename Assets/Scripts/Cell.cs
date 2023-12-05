@@ -23,8 +23,15 @@ public class Cell : MonoBehaviour
         GameManager.Instance.OnCellClicked(disNuts);
     }
 
+    public void UnSetContent()
+    {
+        // Unset the content of the cell
+        content = null;
+    }
+
     public void SetContent(Entity entity)
     {
+        Debug.Log("I am cell " + x + ", " + y + " and I am setting content to " + entity.EntityType);
         // Set the content of the cell
         content = entity;
         // Set parent of GO

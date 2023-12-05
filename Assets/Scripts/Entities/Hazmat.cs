@@ -13,6 +13,12 @@ public class Hazmat : Entity
         return MoveOutcome.Fail;
     }
 
+    public override bool MakeMove()
+    {
+        return false;
+    }
+
+
     public override List<Cell> GetAttackableCells()
     {
         // Return list of neighboring cells since Hazmat is a melee unit

@@ -15,7 +15,7 @@ public abstract class Entity
 
     public Cell CurrentCell { get; set; }
 
-    public Cell NextMove { get; set; }
+    public Cell NextMoveCell { get; set; }
 
     public Entity(GameObject gameObject)
     {
@@ -23,6 +23,7 @@ public abstract class Entity
     }
 
     public abstract MoveOutcome UpdateNextMove(Cell cell);
+    public abstract bool MakeMove();
 
     public abstract List<Cell> GetAttackableCells();
 
