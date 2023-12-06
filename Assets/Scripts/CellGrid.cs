@@ -119,7 +119,55 @@ public class CellGrid : MonoBehaviour
             grid[2, 5].GetComponent<Cell>(),
             grid[3, 4].GetComponent<Cell>(),
             grid[2, 3].GetComponent<Cell>(),
+            grid[4, 9].GetComponent<Cell>(),
         };
+
+        // we choose 3 random cells to start the void
+        List<Cell> voidCells = new List<Cell>();
+        int voidCellsCount = 3;
+        while (voidCellsCount > 0)
+        {
+            int i = Random.Range(0, GameParams.MATRIX_HEIGHT);
+            int start = Mathf.Max(i + 1 - GameParams.GRID_HEIGHT, 0);
+            int end = Mathf.Min(GameParams.GRID_WIDTH + i, GameParams.MATRIX_WIDTH);
+            int j = Random.Range(start, end);
+            Cell cell = grid[i, j].GetComponent<Cell>();
+            if (cell.content == null && !bannedCells.Contains(cell))
+            {
+                voidCells.Add(cell);
+                voidCellsCount--;
+                bannedCells.Add(cell);
+            }
+        }
+
+        // from each void we create a common list of neighbors and add one random of them to the void and repeat 7 times
+        for (int i = 0; i < 7; i++)
+        {
+            List<Cell> neighbors = new List<Cell>();
+            foreach (Cell cell in voidCells)
+            {
+                foreach (Cell neighbor in cell.neighbors)
+                {
+                    if (neighbor != null && neighbor.content == null && !bannedCells.Contains(neighbor))
+                    {
+                        neighbors.Add(neighbor);
+                    }
+                }
+            }
+            if (neighbors.Count > 0)
+            {
+                int index = Random.Range(0, neighbors.Count);
+                voidCells.Add(neighbors[index]);
+                bannedCells.Add(neighbors[index]);
+            }
+        }
+
+        // we create the voids
+        foreach (Cell cell in voidCells)
+        {
+            GameObject voidObject = Instantiate(voidPrefab, Vector3.zero, Quaternion.identity);
+            cell.SetTile(new Void(voidObject));
+        }
 
 
         for (int i = 0; i < GameParams.MATRIX_HEIGHT; i++)
@@ -129,8 +177,8 @@ public class CellGrid : MonoBehaviour
             for (int j = start; j < end; j++)
             {
                 Cell cell = grid[i, j].GetComponent<Cell>();
-                // 90% chance of floor, 10% chance of void
-                if (Random.Range(0, 10) < 9)
+
+                if (!voidCells.Contains(cell))
                 {
                     GameObject floorObject = Instantiate(floorPrefab, Vector3.zero, Quaternion.identity);
                     cell.SetTile(new LabFloor(floorObject));
@@ -144,12 +192,8 @@ public class CellGrid : MonoBehaviour
                         enemies.Add(cell.content);
                     }
                 }
-                else
-                {
-                    GameObject voidObject = Instantiate(voidPrefab, Vector3.zero, Quaternion.identity);
-                    cell.SetTile(new Void(voidObject));
-                }
             }
+
         }
 
     }
@@ -174,13 +218,12 @@ public class CellGrid : MonoBehaviour
     }
 
     /// <summary>
-    /// Funcion que dada dos cells, devuelve lista de cells que forman el camino MÁS CORTO entre ellas o lista vacia si no hay camino
+    /// Finds the path from startCell to endCell.
     /// </summary>
     /// <param name="startCell"></param>
     /// <param name="endCell"></param>
     public List<Cell> FindPath(Cell startCell, Cell endCell)
     {
-        //// Content of the cell public Entity content; // Neighbors of the cell public Cell[] neighbors;
         // List of cells to visit
         List<Cell> openCells = new List<Cell>();
         foreach (Cell neighbor in startCell.neighbors)
