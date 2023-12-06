@@ -173,4 +173,69 @@ public class CellGrid : MonoBehaviour
         enemies.Clear();
     }
 
+    /// <summary>
+    /// Funcion que dada dos cells, devuelve lista de cells que forman el camino MÁS CORTO entre ellas o lista vacia si no hay camino
+    /// </summary>
+    /// <param name="startCell"></param>
+    /// <param name="endCell"></param>
+    public List<Cell> FindPath(Cell startCell, Cell endCell)
+    {
+        //// Content of the cell public Entity content; // Neighbors of the cell public Cell[] neighbors;
+        // List of cells to visit
+        List<Cell> openCells = new List<Cell>();
+        foreach (Cell neighbor in startCell.neighbors)
+        {
+            if (neighbor != null && neighbor.content == null)
+            {
+                openCells.Add(neighbor);
+            }
+        }
+        // List of visited cells
+        List<Cell> closedCells = new List<Cell>();
+        closedCells.Add(startCell);
+        // Dictionary of parents
+        Dictionary<Cell, Cell> parents = new Dictionary<Cell, Cell>();
+        foreach (Cell cell in openCells)
+        {
+            parents.Add(cell, startCell);
+        }
+
+        while (openCells.Count > 0)
+        {
+            Cell currentCell = openCells[0];
+            openCells.RemoveAt(0);
+            closedCells.Add(currentCell);
+
+            if (currentCell == endCell)
+            {
+                // Path found
+                List<Cell> path = new List<Cell>();
+                Cell current = endCell;
+                while (current != startCell)
+                {
+                    path.Add(current);
+                    current = parents[current];
+                }
+                path.Reverse();
+                return path;
+            }
+
+            foreach (Cell neighbor in currentCell.neighbors)
+            {
+                if (neighbor != null && neighbor.content == null && !closedCells.Contains(neighbor) && !openCells.Contains(neighbor))
+                {
+                    if (neighbor.tile.TileType == TileType.Floor)
+                    {
+                        openCells.Add(neighbor);
+                        parents.Add(neighbor, currentCell);
+
+                    }
+                }
+            }
+        }
+        // No path found
+        return new List<Cell>();
+    }
 }
+
+

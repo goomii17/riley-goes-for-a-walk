@@ -7,7 +7,7 @@ public class Void : Tile
 
     public Void(GameObject gameObject) : base(gameObject)
     {
-        // Do nothing
+        TileType = TileType.Void;
     }
 
     public override void HighlightTile()

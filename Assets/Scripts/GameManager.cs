@@ -133,6 +133,14 @@ public class GameManager : MonoBehaviour
         // Click on floor
         if (targetCell.content == null)
         {
+            // probando el pathfinding desde la posicion del player a targetCell
+            List<Cell> path = cellGrid.FindPath(cellGrid.player.CurrentCell, targetCell);
+            foreach (Cell cell in path)
+            {
+                cell.HighlightCell();
+                highlightedCells.Add(cell);
+            }
+
             HandleClickOnFloor();
         }
         // Click on enemy, player or elevator
